@@ -5,13 +5,13 @@ pipeline {
         stage('Git Clone') {
             steps {
                 echo 'Cloining Git Repository'
-				git credentialsId: 'MYGIT_HUB_CREDENTIALS', url: 'https://github.com/msouravd/springboot-with-docker.git'
+		git credentialsId: 'MYGIT_HUB_CREDENTIALS', url: 'https://github.com/msouravd/springboot-with-docker.git'
             }
         }
         stage('Gradle Build') {
             steps {
                 echo 'Build Package With Gradle'
-				sh './gradlew build'
+		sh './gradlew build'
             }
         }
         stage('Docker Build') {
