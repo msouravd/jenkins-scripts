@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git Clone') {
+            steps {
+                echo 'Cloining Git Repository'
+				git credentialsId: 'MYGIT_HUB_CREDENTIALS', url: 'https://github.com/msouravd/springboot-with-docker.git'
+            }
+        }
+        stage('Gradle Build') {
+            steps {
+                echo 'Build Package With Gradle'
+				sh './gradlew build'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker Image'
+                sh 'docker version'
+                sh 'docker build -t sample-java-app .'
+                sh 'docker image list'
+                sh 'docker tag sample-java-app msouravd/sample-java-app:sample-java-app_1.0'							
+            }
+        }		
+        stage('Docker Login') {
+            steps {
+                echo 'Login to Docker Hub'
+                withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'PASSWORD')]) {
+                sh 'docker login -u msouravd -p $PASSWORD'
+                }						
+            }
+        }		
+        stage('Push Image to Docker Hub') {
+            steps {
+                echo 'Pushing Image to Docker Hub'
+                sh 'docker push msouravd/sample-java-app:sample-java-app_1.0'					
+            }
+        }		
+
+    }
+}
